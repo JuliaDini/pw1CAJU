@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Animais</title>
+    <link rel="icon" href="/pataicone.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #421802, #dd4122);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      padding: 25px;
+      width: 100%;
+      max-width: 450px;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      color: #de705a;
+      font-size: 2rem;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    h1 i {
+      color: #ab4835;
+      margin-left: 10px;
+    }
+
+    h1::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: #863616;
+      margin: 10px auto 0;
+      border-radius: 5px;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    form input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 300;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    form input:focus {
+      border-color: #da3700;
+      box-shadow: 0 0 8px rgba(250, 140, 71, 0.5);
+      outline: none;
+    }
+
+    form button {
+      width: 100%;
+      padding: 12px;
+      background: #fc5e25;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: uppercase;
+      transition: background 0.3s;
+    }
+
+    form button i {
+      margin-right: 8px;
+    }
+
+    form button:hover {
+      background: #c83a0e;
+    }
+
+    .output {
+      margin-top: 20px;
+    }
+
+    .animal {
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+
+    .animal:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      background: linear-gradient(to right, #fdfbfb, #ebedee);
+      border-color: rgba(197, 83, 12, 0.841);
+      border-color: rgba(243, 107, 49, 0.5);
+      box-shadow: 1 6px 16px rgba(255, 64, 16, 0.3), 0 0 10px rgba(252, 71, 17, 0.5);
+    }
+
+
+    .animal-info {
+      flex-grow: 1;
+    }
+
+    .animal-info p {
+      transition: color 0.3s ease;
+    }
+
+    .delete-btn {
+      background: #ff4b4b;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .delete-btn i {
+      margin-right: 5px;
+    }
+
+    .delete-btn:hover {
+      background: #cc0000;
+    }
+
+    .empty-message {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    .animal:hover .animal-info p {
+      color: #fc3e25;
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro de Animais <i class="fas fa-paw"></i></h1>
+    <form id="animalForm">
+      <label for="tipo">Tipo</label>
+      <input type="text" id="tipo" placeholder="Ex.: Cachorro, Gato" required>
+      
+      <label for="raca">Raça</label>
+      <input type="text" id="raca" placeholder="Ex.: Labrador, Siamês" required>
+      
+      <label for="cor">Cor</label>
+      <input type="text" id="cor" placeholder="Ex.: Preto, Branco" required>
+      
+      <button type="submit"><i class="fas fa-plus-circle"></i> Cadastrar</button>
+    </form>
+    <div class="output" id="animalList"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('animalForm');
+    const animalList = document.getElementById('animalList');
+    const animals = JSON.parse(localStorage.getItem('animals')) || [];
+
+
+    function renderAnimals() {
+      animalList.innerHTML = '';
+      if (animals.length === 0) {
+        animalList.innerHTML = '<p class="empty-message">Nenhum animal cadastrado.</p>';
+        return;
+      }
+      animals.forEach((animal, index) => {
+        const animalDiv = document.createElement('div');
+        animalDiv.classList.add('animal');
+        animalDiv.innerHTML = `
+          <div class="animal-info">
+            <p><strong>Tipo:</strong> ${animal.tipo}</p>
+            <p><strong>Raça:</strong> ${animal.raca}</p>
+            <p><strong>Cor:</strong> ${animal.cor}</p>
+          </div>
+          <button class="delete-btn" onclick="deleteAnimal(${index})">
+            <i class="fas fa-trash-alt"></i> Excluir
+          </button>
+        `;
+        animalList.appendChild(animalDiv);
+      });
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const tipo = document.getElementById('tipo').value;
+      const raca = document.getElementById('raca').value;
+      const cor = document.getElementById('cor').value;
+
+      const newAnimal = { tipo, raca, cor };
+      animals.push(newAnimal);
+      localStorage.setItem('animals', JSON.stringify(animals));
+      form.reset();
+      renderAnimals();
+    });
+
+    function deleteAnimal(index) {
+      if (confirm('Tem certeza que deseja excluir este animal?')) {
+        animals.splice(index, 1);
+        localStorage.setItem('animals', JSON.stringify(animals));
+        renderAnimals();
+      }
+    }
+
+    renderAnimals();
+  </script>
+</body>
+</html>
